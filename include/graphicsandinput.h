@@ -1,12 +1,12 @@
 #ifndef GRAPHICSANDINPUT_GUARD
 #define GRAPHICSANDINPUT_GUARD
 
-#include <SDL2/SDL.h>
 #include "chip8.h"
+#include <SDL2/SDL.h>
 
 typedef struct {
-	SDL_Window *window;
-	SDL_Renderer *renderer;
+  SDL_Window *window;
+  SDL_Renderer *renderer;
 } Graphicshandler;
 
 void setupgraphicshandler(Graphicshandler *ppu);
