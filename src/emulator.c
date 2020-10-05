@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	int quit = 0;
 	while (quit == 0) {
 		emulatecycle(&cpu);
-
+		
 		if (cpu.drawflag) {
 			drawgraphics(&ppu, &cpu);
 		}

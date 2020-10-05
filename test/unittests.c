@@ -1,6 +1,7 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 #include "chip8.h"
+#include <stdio.h>
 
 int init_suite(void) { return 0; }
 int clean_suite(void) { return 0; }
@@ -186,8 +187,30 @@ void regtest(void) {
 	emulatecycle(&testcpu);
 	CU_ASSERT(testcpu.V[0xa] == 0x54);
 	CU_ASSERT(testcpu.V[0xf] == 1);
+}
 
+void LD_tests(void) {
+	initializechip8(&testcpu);
 
+	// Load 123 to V1
+	testcpu.memory[512] = 0x71;
+	testcpu.memory[513] = 102;
+	emulatecycle(&testcpu);
+	CU_ASSERT(testcpu.V[1] == 102);
+
+	// Set I to 600
+	testcpu.memory[514] = 0xa2;
+	testcpu.memory[515] = 0x58;
+	emulatecycle(&testcpu);
+	CU_ASSERT(testcpu.I == 600);
+
+	// Load BCD form of 123 to 600 601 602
+	testcpu.memory[516] = 0xf1;
+	testcpu.memory[517] = 0x33;
+	emulatecycle(&testcpu);
+	CU_ASSERT(testcpu.memory[600] == 1);
+	CU_ASSERT(testcpu.memory[601] == 0);
+	CU_ASSERT(testcpu.memory[602] == 2);
 }
 
 int main() {
@@ -219,6 +242,12 @@ int main() {
 
 	if (CU_add_test(opcodesuite, "\n\n.....Testing reg operations.....\n\n",
 									regtest) == NULL) {
+		CU_cleanup_registry();
+		return CU_get_error();
+	}
+
+	if (CU_add_test(opcodesuite, "\n\n.....Testing load operations.....\n\n",
+									LD_tests) == NULL) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}

@@ -352,15 +352,16 @@ void emulatecycle(Chip8 *cpu) {
 		}
 		// Fx33 LD B, Vx - Store BCD representation of Vx in memory locations I, I+1, I+2
 		case 0x33: {
-			cpu->memory[cpu->I] = (cpu->V[(cpu->opcode & 0x0f00) >> 8]/100) % 10;
-			cpu->memory[cpu->I + 1] = (cpu->V[(cpu->opcode & 0x0f00) >> 8]/10) % 10;
-			cpu->memory[cpu->I + 2] = cpu->V[(cpu->opcode & 0x0f00) >> 8] % 10;
+			unsigned int Vx = cpu->V[(cpu->opcode & 0x0f00) >> 8];
+			cpu->memory[cpu->I] = (Vx / 100) % 10;
+			cpu->memory[cpu->I + 1] = (Vx / 10) % 10;
+			cpu->memory[cpu->I + 2] = Vx % 10;
 			cpu->pc += 2;
 			break;
 		}
 		// Fx55 LD [I], Vx - Store registers V0 through Vx in memory starting at location I
 		case 0x55: {
-			for (int i = 0; i < (cpu->opcode & 0x0f00) >> 8; ++i) {
+			for (int i = 0; i <= ((cpu->opcode & 0x0f00) >> 8); i++) {
 				cpu->memory[cpu->I + i] = cpu->V[i];
 			}
 			cpu->pc += 2;
@@ -368,7 +369,7 @@ void emulatecycle(Chip8 *cpu) {
 		}
  		// Fx65 LD Vx, [I] - Read registers V0 through Vx from memory starting at location I
 		case 0x65: {
-			for (int i = 0; i < (cpu->opcode & 0x0f00) >> 8; ++i) {
+			for (int i = 0; i < ((cpu->opcode & 0x0f00) >> 8) + 1; ++i) {
 				cpu->V[i] = cpu->memory[cpu->I + i];
 			}
 			cpu->pc += 2;
